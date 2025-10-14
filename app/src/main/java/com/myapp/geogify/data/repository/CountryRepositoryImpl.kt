@@ -1,5 +1,4 @@
-package com.myapp.geogify.data.repository
-
+// data/repository/CountryRepositoryImpl.kt
 import com.myapp.geogify.data.mapper.toDomain
 import com.myapp.geogify.data.remote.api.CountryApi
 import com.myapp.geogify.domain.model.Country
@@ -13,12 +12,16 @@ class CountryRepositoryImpl @Inject constructor(
 ) : CountryRepository {
 
     override suspend fun getCountryList(): List<Country> {
-        val dtos = api.getAll(fields = "name,cca2,cca3,flags,region,capital")
+        val dtos = api.getAll(fields = "name,cca2,cca3,flags,region,capital,languages")
         return dtos.map { it.toDomain() }
     }
 
     override suspend fun getCountryByCode(code: String): Country {
-        val dtoList = api.getByCode(code = code, fields = "name,cca2,cca3,flags,region,capital,subregion,languages,population")
-        return dtoList.first().toDomain()
+        val dto = api.getByCode(
+            code = code,
+            fields = "name,cca2,cca3,flags,region,capital,subregion,languages,population"
+        )
+        return dto.toDomain()
     }
 }
+

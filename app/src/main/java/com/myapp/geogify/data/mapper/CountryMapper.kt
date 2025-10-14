@@ -8,10 +8,14 @@ fun CountryDto.toDomain(): Country =
         code = (cca3?.takeIf { it.isNotBlank() } ?: cca2.orEmpty()).uppercase(),
         name = (name?.common ?: name?.official).orEmpty()
             .replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() },
-        flagSvg = flags?.svg,
+        flagUrl = flags?.png,                       // <- antes flagSvg = flags?.svg
         capital = capital?.firstOrNull(),
         region = region.orEmpty(),
-        languages = languages?.values?.filter { it.isNotBlank() }?.distinct()?.sorted().orEmpty()
+        languages = languages?.values
+            ?.filter { it.isNotBlank() }
+            ?.distinct()
+            ?.sorted()
+            .orEmpty()
     )
 
 fun List<CountryDto>.toDomain(): List<Country> = map { it.toDomain() }

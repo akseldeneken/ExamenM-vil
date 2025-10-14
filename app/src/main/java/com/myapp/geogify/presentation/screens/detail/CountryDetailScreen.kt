@@ -1,108 +1,77 @@
-package com.myapp.geogify.presentation.screens.detail.components
+package com.myapp.geogify.presentation.screens.detail
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.myapp.geogify.presentation.screens.detail.components.CountryDetailContent
 
 @Suppress("ktlint:standard:function-naming")
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CountryDetailContent(
-    name: String,
-    flagSvg: String?,
-    capital: String?,
-    region: String,
-    languages: List<String>,
-    modifier: Modifier = Modifier,
+fun CountryDetailScreen(
+    code: String,
+    onRetry: () -> Unit = {},
+    onBackClick: () -> Unit,
+    viewModel: CountryDetailViewModel = hiltViewModel(),
 ) {
-    val scroll = rememberScrollState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(scroll)
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        AsyncImage(
-            model = flagSvg,
-            contentDescription = "$name flag",
-            modifier = Modifier.size(200.dp),
-        )
+    // Solo pedimos el país; el ViewModel se encarga de guardarlo cuando llega el Success
+    LaunchedEffect(code) { viewModel.getCountry(code) }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = name,
-            style = MaterialTheme.typography.headlineMedium,
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly,
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Country") },
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    }
+                }
+            )
+        }
+    ) { padding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding),
+            contentAlignment = Alignment.Center
         ) {
-            FactColumn(label = "Capital", value = capital)
-            FactColumn(label = "Region", value = region)
+            when {
+                uiState.isLoading -> {
+                    CircularProgressIndicator()
+                }
+                uiState.error != null -> {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            text = uiState.error ?: "Unknown error",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Button(onClick = { viewModel.getCountry(code) }) {
+                            Text("Retry")
+                        }
+                    }
+                }
+                uiState.country != null -> {
+                    val c = uiState.country!!
+                    CountryDetailContent(
+                        name = c.name,
+                        flagUrl = c.flagUrl,
+                        capital = c.capital,
+                        region = c.region,
+                        languages = c.languages
+                    )
+                }
+            }
         }
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        SectionTitle("Languages")
-        ChipRow(items = languages)
-    }
-}
-
-@Composable
-private fun FactColumn(label: String, value: String?) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(label, style = MaterialTheme.typography.labelMedium)
-        Text(value ?: "—", style = MaterialTheme.typography.bodyMedium)
-    }
-}
-
-@Composable
-private fun SectionTitle(text: String) {
-    Text(text, style = MaterialTheme.typography.titleMedium)
-}
-
-@Composable
-private fun ChipRow(items: List<String>, chipShape: Shape = MaterialTheme.shapes.small) {
-    if (items.isEmpty()) {
-        Text("—", style = MaterialTheme.typography.bodyMedium)
-        return
-    }
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        items.forEach { item ->
-            Chip(text = item, shape = chipShape)
-        }
-    }
-}
-
-@Composable
-private fun Chip(text: String, shape: Shape) {
-    Surface(shape = shape, tonalElevation = 1.dp) {
-        Text(
-            text = text,
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-            style = MaterialTheme.typography.bodySmall,
-        )
     }
 }

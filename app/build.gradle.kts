@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.myapp.geofify"
+    namespace = "com.myapp.geogify"
     compileSdk = 36
 
     defaultConfig {

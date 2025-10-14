@@ -49,7 +49,7 @@ fun CountryUnit(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             AsyncImage(
-                model = country.flagSvg,
+                model = country.flagUrl,
                 contentDescription = "${country.name} flag",
                 modifier = Modifier
                     .padding(2.dp)

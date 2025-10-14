@@ -10,6 +10,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,7 +29,16 @@ fun HomeScreen(
 ) {
     var selectedTabIndex by remember { mutableStateOf(0) }
     val tabs = listOf("Countries", "Search")
+
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val startCode by viewModel.startWithCountry.collectAsStateWithLifecycle()
+
+    LaunchedEffect(startCode) {
+        startCode?.let { code ->
+            onCountryClick(code)
+            viewModel.clearStartCountry()
+        }
+    }
 
     Scaffold(
         topBar = { CenterAlignedTopAppBar(title = { Text("Geogify") }) },
@@ -63,4 +73,3 @@ fun HomeScreen(
         }
     }
 }
-
