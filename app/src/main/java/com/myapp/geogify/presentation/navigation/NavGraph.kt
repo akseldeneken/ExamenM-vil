@@ -11,6 +11,7 @@ import androidx.navigation.navArgument
 import com.myapp.geogify.presentation.screens.detail.CountryDetailScreen
 import com.myapp.geogify.presentation.screens.home.HomeScreen
 
+// pantallas y rutas
 sealed class Screen(val route: String) {
     object Home : Screen("home")
     object Detail : Screen("detail/{countryId}") {
@@ -23,11 +24,13 @@ fun GeogifyNavGraph(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
 ) {
+
     NavHost(
         navController = navController,
         startDestination = Screen.Home.route,
         modifier = modifier,
     ) {
+
         composable(Screen.Home.route) {
             HomeScreen(
                 onCountryClick = { countryCode ->
@@ -35,6 +38,7 @@ fun GeogifyNavGraph(
                 },
             )
         }
+        // recibe countryId y maneja back
         composable(
             route = Screen.Detail.route,
             arguments = listOf(navArgument("countryId") { type = NavType.StringType }),
@@ -43,6 +47,7 @@ fun GeogifyNavGraph(
             CountryDetailScreen(
                 code = countryId,
                 onRetry = { },
+
                 onBackClick = {
                     val didPop = navController.popBackStack()
                     if (!didPop) {

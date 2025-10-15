@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 
+// Pantalla de detalle: muestra bandera, nombre y datos básicos del país
 @Suppress("ktlint:standard:function-naming")
 @Composable
 fun CountryDetailContent(
@@ -40,6 +41,7 @@ fun CountryDetailContent(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        // Bandera desde URL
         AsyncImage(
             model = flagUrl,
             contentDescription = "$name flag",
@@ -55,6 +57,7 @@ fun CountryDetailContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        //capital y región en dos columnas
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly,
@@ -65,6 +68,7 @@ fun CountryDetailContent(
 
         Spacer(modifier = Modifier.height(20.dp))
 
+        // Idiomas en chips
         SectionTitle("Languages")
         ChipRow(items = languages)
     }

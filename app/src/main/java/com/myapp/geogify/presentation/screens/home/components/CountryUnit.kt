@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.myapp.geogify.domain.model.Country
 
+// Cards para cada país en la lista
 @Composable
 fun CountryUnit(
     country: Country,

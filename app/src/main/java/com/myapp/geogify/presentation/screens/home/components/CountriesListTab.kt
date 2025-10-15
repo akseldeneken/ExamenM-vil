@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.myapp.geogify.domain.model.Country
 
-
+// Composable para mostrar la lista de países con manejo de estados
 @Composable
 fun CountryListTab(
     countries: List<Country>,

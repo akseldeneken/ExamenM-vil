@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
+// Definicion de chips para los idiomas
 @Composable
 fun Chip( type: String) {
     Surface(

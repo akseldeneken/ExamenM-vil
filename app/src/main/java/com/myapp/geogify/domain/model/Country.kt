@@ -1,5 +1,6 @@
 package com.myapp.geogify.domain.model
 
+// Data class representando um país
 data class Country(
     val code: String,
     val name: String,
