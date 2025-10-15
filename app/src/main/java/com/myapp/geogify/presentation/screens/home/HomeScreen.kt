@@ -18,6 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.myapp.geogify.presentation.common.InfoHookButton
 import com.myapp.geogify.presentation.screens.home.components.CountryListContent
 import com.myapp.geogify.presentation.screens.home.components.SearchTab
 
@@ -25,14 +26,16 @@ import com.myapp.geogify.presentation.screens.home.components.SearchTab
 @Composable
 fun HomeScreen(
     onCountryClick: (String) -> Unit,
+    // ViewModel inyectado mediante Hilt para obtener estado y acciones
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     var selectedTabIndex by remember { mutableStateOf(0) }
     val tabs = listOf("Countries", "Search")
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val startCode by viewModel.startWithCountry.collectAsStateWithLifecycle()
+    val startCode by viewModel.startWithCountry.collectAsStateWithLifecycle(initialValue = null)
 
+    // Si hay país guardado navega una vez y limpia el evento
     LaunchedEffect(startCode) {
         startCode?.let { code ->
             onCountryClick(code)
@@ -41,10 +44,17 @@ fun HomeScreen(
     }
 
     Scaffold(
-        topBar = { CenterAlignedTopAppBar(title = { Text("Geogify") }) },
+        topBar = {
+            // Botón de ayuda
+            CenterAlignedTopAppBar(
+                title = { Text("Geogify") },
+                actions = { InfoHookButton() }
+            )
+        },
         bottomBar = {
             NavigationBar {
                 tabs.forEachIndexed { index, title ->
+                    // Cambia de pestaña y actualiza la vista mostrada
                     NavigationBarItem(
                         selected = selectedTabIndex == index,
                         onClick = { selectedTabIndex = index },
@@ -60,6 +70,7 @@ fun HomeScreen(
                 .fillMaxWidth()
                 .padding(padding)
         ) {
+            // lista o buscador según la pestaña activa
             when (selectedTabIndex) {
                 0 -> CountryListContent(
                     countryList = uiState.countryList,

@@ -35,15 +35,18 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.myapp.geogify.domain.model.Country
 import com.myapp.geogify.presentation.screens.home.HomeViewModel
 
+// Pantalla de búsqueda: usa la lista del ViewModel y filtra por nombre/código
 @Suppress("ktlint:standard:function-naming")
 @Composable
 fun SearchTab(
     onCountryClick: (String) -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
+    // Estado local del query y suscripción al uiState
     var searchQuery by remember { mutableStateOf("") }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    // Campo de texto para escribir el query
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -61,6 +64,7 @@ fun SearchTab(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Hace el filtrado de países según el query
         val filteredCountries =
             remember(searchQuery, uiState.countryList) {
                 if (searchQuery.isEmpty()) {
@@ -73,6 +77,7 @@ fun SearchTab(
                 }
             }
 
+        // Renderiza estado vacío
         when {
             searchQuery.isEmpty() -> {
                 Box(

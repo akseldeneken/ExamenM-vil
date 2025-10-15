@@ -13,8 +13,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+// ViewModel del detalle: orquesta la carga y expone el estado a la UI
 @HiltViewModel
 class CountryDetailViewModel @Inject constructor(
+    // Dependencias inyectadas
     private val getCountryUseCase: GetCountryUseCase,
     private val userPreferences: UserPreferences
 ) : ViewModel() {
@@ -22,12 +24,16 @@ class CountryDetailViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(CountryDetailUiState())
     val uiState: StateFlow<CountryDetailUiState> = _uiState.asStateFlow()
 
+    // Carga un país por código y actualiza el estado según el resultado
     fun getCountry(code: String) {
         viewModelScope.launch {
             getCountryUseCase(code).collect { result ->
                 _uiState.update { state ->
                     when (result) {
+                        // Estado de carga
                         is Result.Loading -> state.copy(isLoading = true)
+
+                        // En success guarda preferencia y publica datos
                         is Result.Success -> {
                             userPreferences.saveLastCountry(code)
                             state.copy(
@@ -36,6 +42,8 @@ class CountryDetailViewModel @Inject constructor(
                                 error = null
                             )
                         }
+
+                        // En error manda mensaje
                         is Result.Error -> state.copy(
                             error = result.message,
                             isLoading = false

@@ -21,11 +21,12 @@ fun CountryDetailScreen(
     onBackClick: () -> Unit,
     viewModel: CountryDetailViewModel = hiltViewModel(),
 ) {
+    // Se obtiene  el estado de UI del ViewModel
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    // Solo pedimos el país; el ViewModel se encarga de guardarlo cuando llega el Success
     LaunchedEffect(code) { viewModel.getCountry(code) }
 
+    // Estructura  con TopAppBar y botón de regreso
     Scaffold(
         topBar = {
             TopAppBar(
@@ -38,6 +39,7 @@ fun CountryDetailScreen(
             )
         }
     ) { padding ->
+        // Contenedor principal que resuelve loading / error / éxito
         Box(
             modifier = Modifier
                 .fillMaxSize()
